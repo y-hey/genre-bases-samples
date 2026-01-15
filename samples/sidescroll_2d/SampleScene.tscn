@@ -1,0 +1,142 @@
+[gd_scene load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://samples/sidescroll_2d/SamplePlayer.cs" id="1_player"]
+[ext_resource type="Resource" path="res://samples/sidescroll_2d/sample_config.tres" id="2_config"]
+[ext_resource type="Script" path="res://addons/sidescroll_2d_base/camera/FollowCamera2D.cs" id="3_camera"]
+[ext_resource type="Script" path="res://addons/sidescroll_2d_base/camera/CameraLimit.cs" id="4_limit"]
+[ext_resource type="Script" path="res://addons/sidescroll_2d_base/transition/SpawnPoint.cs" id="5_spawn"]
+[ext_resource type="Script" path="res://addons/sidescroll_2d_base/transition/AreaGate.cs" id="6_gate"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(32, 48)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(800, 32)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(150, 20)
+
+[sub_resource type="RectangleShape2D" id="4"]
+size = Vector2(64, 96)
+
+[node name="SampleScene" type="Node2D"]
+
+[node name="Player" type="CharacterBody2D" parent="."]
+position = Vector2(100, 200)
+script = ExtResource("1_player")
+Config = ExtResource("2_config")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("1")
+
+[node name="Sprite" type="ColorRect" parent="Player"]
+offset_left = -16.0
+offset_top = -24.0
+offset_right = 16.0
+offset_bottom = 24.0
+color = Color(0.2, 0.6, 1, 1)
+
+[node name="Label" type="Label" parent="Player"]
+offset_left = -20.0
+offset_top = -40.0
+offset_right = 20.0
+offset_bottom = -20.0
+text = "Player"
+horizontal_alignment = 1
+
+[node name="Camera" type="Camera2D" parent="."]
+script = ExtResource("3_camera")
+SmoothSpeed = 5.0
+
+[node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2(400, 350)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("2")
+
+[node name="Visual" type="ColorRect" parent="Ground"]
+offset_left = -400.0
+offset_top = -16.0
+offset_right = 400.0
+offset_bottom = 16.0
+color = Color(0.4, 0.3, 0.2, 1)
+
+[node name="Platform1" type="StaticBody2D" parent="."]
+position = Vector2(200, 250)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform1"]
+shape = SubResource("3")
+
+[node name="Visual" type="ColorRect" parent="Platform1"]
+offset_left = -75.0
+offset_top = -10.0
+offset_right = 75.0
+offset_bottom = 10.0
+color = Color(0.5, 0.4, 0.3, 1)
+
+[node name="Platform2" type="StaticBody2D" parent="."]
+position = Vector2(500, 200)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform2"]
+shape = SubResource("3")
+
+[node name="Visual" type="ColorRect" parent="Platform2"]
+offset_left = -75.0
+offset_top = -10.0
+offset_right = 75.0
+offset_bottom = 10.0
+color = Color(0.5, 0.4, 0.3, 1)
+
+[node name="CameraLimit" type="Area2D" parent="."]
+position = Vector2(400, 200)
+script = ExtResource("4_limit")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CameraLimit"]
+shape = SubResource("2")
+debug_color = Color(0, 1, 0, 0.2)
+
+[node name="SpawnPoint" type="Marker2D" parent="."]
+position = Vector2(100, 300)
+script = ExtResource("5_spawn")
+SpawnPointId = "start"
+IsDefault = true
+
+[node name="AreaGate" type="Area2D" parent="."]
+position = Vector2(700, 300)
+script = ExtResource("6_gate")
+GateId = "exit_gate"
+InteractAction = "ui_accept"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AreaGate"]
+shape = SubResource("4")
+
+[node name="Visual" type="ColorRect" parent="AreaGate"]
+offset_left = -32.0
+offset_top = -48.0
+offset_right = 32.0
+offset_bottom = 48.0
+color = Color(0.8, 0.2, 0.8, 0.5)
+
+[node name="Label" type="Label" parent="AreaGate"]
+offset_left = -30.0
+offset_top = -70.0
+offset_right = 30.0
+offset_bottom = -50.0
+text = "Gate"
+horizontal_alignment = 1
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Instructions" type="Label" parent="UI"]
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 400.0
+offset_bottom = 100.0
+text = "操作方法:
+← → : 移動
+Space/Enter : ジャンプ
+
+機能チェック:
+- 左右移動、ジャンプ
+- 追従カメラ
+- 着地/落下検知"

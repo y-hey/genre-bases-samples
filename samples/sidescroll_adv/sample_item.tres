@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/sidescroll_adv_base/inventory/ItemData.cs" id="1"]
+
+[resource]
+script = ExtResource("1")
+ItemId = "key_sample"
+DisplayName = "サンプルの鍵"
+Description = "サンプルシーンで使う鍵です。扉を開けることができます。"
+IsStackable = false
+MaxStack = 1
+IsUsable = false
+IsKeyItem = true

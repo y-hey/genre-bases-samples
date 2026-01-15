@@ -1,0 +1,11 @@
+# Godot
+.godot/
+*.import
+
+# .NET
+bin/
+obj/
+*.csproj.user
+
+# addonsはジャンクション/シンボリックリンクなので追跡しない
+addons/

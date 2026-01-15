@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="DialogueData" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://addons/sidescroll_adv_base/dialogue/DialogueData.cs" id="1_data"]
+[ext_resource type="Script" path="res://addons/sidescroll_adv_base/dialogue/DialogueData.cs" id="2_line"]
+
+[sub_resource type="Resource" id="line1"]
+script = ExtResource("2_line")
+Text = "こんにちは！私はサンプルNPCです。"
+SpeakerOverride = ""
+PortraitOverride = ""
+
+[sub_resource type="Resource" id="line2"]
+script = ExtResource("2_line")
+Text = "この部屋の鍵は、あちらの光っている場所にありますよ。"
+SpeakerOverride = ""
+PortraitOverride = ""
+
+[sub_resource type="Resource" id="line3"]
+script = ExtResource("2_line")
+Text = "頑張ってくださいね！"
+SpeakerOverride = ""
+PortraitOverride = ""
+
+[resource]
+script = ExtResource("1_data")
+DialogueId = "npc_greeting"
+SpeakerName = "村人"
+SpeakerPortrait = ""
+Lines = [SubResource("line1"), SubResource("line2"), SubResource("line3")]

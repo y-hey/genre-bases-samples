@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="CharacterConfig" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/sidescroll_2d_base/core/CharacterConfig.cs" id="1"]
+
+[resource]
+script = ExtResource("1")
+MoveSpeed = 150.0
+Acceleration = 1200.0
+Deceleration = 1800.0
+AirAcceleration = 600.0
+JumpVelocity = 300.0
+Gravity = 800.0
+MaxFallSpeed = 500.0
+CoyoteTime = 0.1
+JumpBufferTime = 0.1

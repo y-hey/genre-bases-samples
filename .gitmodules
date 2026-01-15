@@ -1,0 +1,6 @@
+[submodule "libs/sidescroll-2d-base"]
+	path = libs/sidescroll-2d-base
+	url = https://github.com/y-hey/sidescroll-2d-base.git
+[submodule "libs/sidescroll-adv-base"]
+	path = libs/sidescroll-adv-base
+	url = https://github.com/y-hey/sidescroll-adv-base.git
