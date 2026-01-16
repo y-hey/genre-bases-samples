@@ -22,7 +22,7 @@ public partial class SamplePlayer : BaseCharacter2D
         GD.Print("着地しました");
     }
 
-    protected override void OnStartedFalling()
+    protected override void OnFallStarted()
     {
         GD.Print("落下開始");
     }
