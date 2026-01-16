@@ -10,7 +10,7 @@ namespace SidescrollAdvSample;
 public partial class SampleAdventurePlayer : BaseAdventurePlayer, IPlayerCallbacks
 {
     /// <summary>インタラクトプロンプト表示用ラベル</summary>
-    [Export] public Label PromptLabel { get; set; }
+    [Export] public Label? PromptLabel { get; set; }
 
     protected override void OnReady()
     {

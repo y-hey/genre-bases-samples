@@ -8,10 +8,10 @@ namespace SidescrollAdvSample;
 /// </summary>
 public partial class SampleDialogueUI : CanvasLayer, IDialogueCallbacks
 {
-    [Export] public Panel DialoguePanel { get; set; }
-    [Export] public Label SpeakerLabel { get; set; }
-    [Export] public Label TextLabel { get; set; }
-    [Export] public Label ContinueHint { get; set; }
+    [Export] public Panel? DialoguePanel { get; set; }
+    [Export] public Label? SpeakerLabel { get; set; }
+    [Export] public Label? TextLabel { get; set; }
+    [Export] public Label? ContinueHint { get; set; }
 
     private bool _isDialogueActive;
     private bool _isDialogueManagerConnected;
