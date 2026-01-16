@@ -26,11 +26,11 @@ public partial class SampleAdventurePlayer : BaseAdventurePlayer, IPlayerCallbac
     {
         if (IsMovementLocked) return;
 
-        // 左右移動
-        InputDirection = Input.GetAxis("ui_left", "ui_right");
+        // 左右移動（WASD + 矢印キー）
+        InputDirection = Input.GetAxis("move_left", "move_right");
 
-        // ジャンプ
-        JumpRequested = Input.IsActionJustPressed("ui_accept");
+        // ジャンプ（W + スペース + 上矢印）
+        JumpRequested = Input.IsActionJustPressed("jump");
     }
 
     // IPlayerCallbacks実装
