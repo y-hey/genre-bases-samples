@@ -6,6 +6,12 @@
     <ImplicitUsings>disable</ImplicitUsings>
   </PropertyGroup>
 
+  <!-- y2-core依存パッケージ -->
+  <ItemGroup>
+    <PackageReference Include="ZString" Version="2.6.0" />
+    <PackageReference Include="MemoryPack" Version="1.21.3" />
+  </ItemGroup>
+
   <!-- libs/はsubmodule格納用。addonsジャンクション経由でのみ参照 -->
   <ItemGroup>
     <Compile Remove="libs/**/*.cs" />

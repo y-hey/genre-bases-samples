@@ -10,6 +10,12 @@ git submodule update --init --recursive
 echo "[2/3] addonsフォルダにリンクを作成中..."
 mkdir -p addons
 
+if [ -L addons/y2_core ] || [ -d addons/y2_core ]; then
+    echo "  y2_core: 既に存在します"
+else
+    ln -s ../libs/y2-godot-core-lib/addons/y2_core addons/y2_core
+fi
+
 if [ -L addons/sidescroll_2d_base ] || [ -d addons/sidescroll_2d_base ]; then
     echo "  sidescroll_2d_base: 既に存在します"
 else

@@ -4,3 +4,6 @@
 [submodule "libs/sidescroll-adv-base"]
 	path = libs/sidescroll-adv-base
 	url = https://github.com/y-hey/sidescroll-adv-base.git
+[submodule "libs/y2-godot-core-lib"]
+	path = libs/y2-godot-core-lib
+	url = https://github.com/y-hey/y2-godot-core-lib.git

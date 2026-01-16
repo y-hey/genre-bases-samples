@@ -11,6 +11,12 @@ REM ジャンクション作成
 echo [2/3] addonsフォルダにリンクを作成中...
 if not exist addons mkdir addons
 
+if exist addons\y2_core (
+    echo   y2_core: 既に存在します
+) else (
+    mklink /J addons\y2_core libs\y2-godot-core-lib\addons\y2_core
+)
+
 if exist addons\sidescroll_2d_base (
     echo   sidescroll_2d_base: 既に存在します
 ) else (
