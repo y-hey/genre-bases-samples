@@ -11,7 +11,8 @@ config_version=5
 [application]
 
 config/name="Genre Bases Samples"
-config/features=PackedStringArray("4.4", "C#")
+run/main_scene="res://samples/sidescroll_adv/SampleScene.tscn"
+config/features=PackedStringArray("4.5", "C#")
 config/icon="res://icon.svg"
 
 [dotnet]

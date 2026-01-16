@@ -76,28 +76,34 @@ public partial class SampleDialogueUI : CanvasLayer, IDialogueCallbacks
     }
 
     // IDialogueCallbacks実装
-    public void OnLineDisplayed(string speaker, string text)
+    public void OnDialogueStarted(DialogueData data)
     {
+        GD.Print($"会話開始: {data.DialogueId}");
+    }
+
+    public void OnLineAdvanced(DialogueLine line, int index)
+    {
+        string speaker = !string.IsNullOrEmpty(line.SpeakerOverride) ? line.SpeakerOverride : "???";
         if (SpeakerLabel != null)
         {
             SpeakerLabel.Text = speaker;
         }
         if (TextLabel != null)
         {
-            TextLabel.Text = text;
+            TextLabel.Text = line.Text;
         }
-        GD.Print($"[{speaker}] {text}");
+        GD.Print($"[{speaker}] {line.Text}");
     }
 
-    public void OnChoicesDisplayed(Godot.Collections.Array<DialogueChoice> choices)
+    public void OnChoicesShown(DialogueLine line)
     {
         // サンプルでは選択肢未対応
         GD.Print("選択肢表示（サンプルでは未対応）");
     }
 
-    public void OnDialogueStarted(DialogueData data)
+    public void OnChoiceSelected(DialogueChoice choice, int index)
     {
-        GD.Print($"会話開始: {data.DialogueId}");
+        GD.Print($"選択肢選択: {choice.Text}");
     }
 
     public void OnDialogueEnded()

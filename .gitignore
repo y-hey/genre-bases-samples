@@ -1,6 +1,10 @@
 # Godot
 .godot/
 *.import
+*.uid
+
+# Backup
+*.old
 
 # .NET
 bin/
