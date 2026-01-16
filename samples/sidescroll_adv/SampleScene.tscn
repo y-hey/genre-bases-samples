@@ -40,7 +40,7 @@ script = ExtResource("4_dialogue_mgr")
 position = Vector2(100, 250)
 script = ExtResource("1_player")
 Config = ExtResource("2_config")
-InteractAction = "ui_accept"
+InteractAction = "interact"
 PromptLabel = NodePath("PromptLabel")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
@@ -54,6 +54,8 @@ offset_bottom = 22.0
 color = Color(0.2, 0.6, 1, 1)
 
 [node name="InteractDetector" type="Area2D" parent="Player"]
+monitoring = true
+monitorable = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Player/InteractDetector"]
 shape = SubResource("interact_shape")
@@ -86,6 +88,8 @@ color = Color(0.35, 0.25, 0.15, 1)
 
 [node name="NPC" type="Area2D" parent="."]
 position = Vector2(350, 280)
+monitoring = false
+monitorable = true
 script = ExtResource("7_interact_dlg")
 DialogueData = ExtResource("9_dialogue_data")
 
@@ -110,6 +114,8 @@ horizontal_alignment = 1
 
 [node name="Item" type="Area2D" parent="."]
 position = Vector2(600, 290)
+monitoring = false
+monitorable = true
 script = ExtResource("8_interact_item")
 ItemId = "key_sample"
 
