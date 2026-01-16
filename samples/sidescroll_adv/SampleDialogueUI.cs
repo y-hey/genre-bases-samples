@@ -24,21 +24,23 @@ public partial class SampleDialogueUI : CanvasLayer, IDialogueCallbacks
         }
 
         // DialogueManagerにコールバック登録
-        if (DialogueManager.HasInstance)
+        var dialogueManager = DialogueManager.Instance;
+        if (dialogueManager != null)
         {
-            DialogueManager.Instance.SetCallbacks(this);
-            DialogueManager.Instance.DialogueStarted += OnDialogueStartedSignal;
-            DialogueManager.Instance.DialogueEnded += OnDialogueEndedSignal;
+            dialogueManager.SetCallbacks(this);
+            dialogueManager.DialogueStarted += OnDialogueStartedSignal;
+            dialogueManager.DialogueEnded += OnDialogueEndedSignal;
             _isDialogueManagerConnected = true;
         }
     }
 
     public override void _ExitTree()
     {
-        if (_isDialogueManagerConnected && DialogueManager.HasInstance)
+        var dialogueManager = DialogueManager.Instance;
+        if (_isDialogueManagerConnected && dialogueManager != null)
         {
-            DialogueManager.Instance.DialogueStarted -= OnDialogueStartedSignal;
-            DialogueManager.Instance.DialogueEnded -= OnDialogueEndedSignal;
+            dialogueManager.DialogueStarted -= OnDialogueStartedSignal;
+            dialogueManager.DialogueEnded -= OnDialogueEndedSignal;
             _isDialogueManagerConnected = false;
         }
     }
@@ -50,10 +52,7 @@ public partial class SampleDialogueUI : CanvasLayer, IDialogueCallbacks
         // 進行入力
         if (Input.IsActionJustPressed("ui_accept") || Input.IsActionJustPressed("interact"))
         {
-            if (DialogueManager.HasInstance)
-            {
-                DialogueManager.Instance.Advance();
-            }
+            DialogueManager.Instance?.Advance();
         }
     }
 
