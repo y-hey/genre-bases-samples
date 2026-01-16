@@ -15,7 +15,7 @@
 size = Vector2(28, 44)
 
 [sub_resource type="RectangleShape2D" id="ground_shape"]
-size = Vector2(1000, 32)
+size = Vector2(2000, 32)
 
 [sub_resource type="CircleShape2D" id="interact_shape"]
 radius = 40.0
@@ -37,7 +37,7 @@ script = ExtResource("5_inventory_mgr")
 script = ExtResource("4_dialogue_mgr")
 
 [node name="Player" type="CharacterBody2D" parent="."]
-position = Vector2(100, 250)
+position = Vector2(100, 282)
 script = ExtResource("1_player")
 Config = ExtResource("2_config")
 InteractAction = "interact"
@@ -74,20 +74,20 @@ script = ExtResource("3_camera")
 SmoothSpeed = 5.0
 
 [node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(500, 320)
+position = Vector2(1000, 320)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
 shape = SubResource("ground_shape")
 
 [node name="Visual" type="ColorRect" parent="Ground"]
-offset_left = -500.0
+offset_left = -1000.0
 offset_top = -16.0
-offset_right = 500.0
+offset_right = 1000.0
 offset_bottom = 16.0
 color = Color(0.35, 0.25, 0.15, 1)
 
 [node name="NPC" type="Area2D" parent="."]
-position = Vector2(350, 280)
+position = Vector2(350, 304)
 monitoring = false
 monitorable = true
 script = ExtResource("7_interact_dlg")
@@ -113,7 +113,7 @@ text = "NPC"
 horizontal_alignment = 1
 
 [node name="Item" type="Area2D" parent="."]
-position = Vector2(600, 290)
+position = Vector2(600, 292)
 monitoring = false
 monitorable = true
 script = ExtResource("8_interact_item")
