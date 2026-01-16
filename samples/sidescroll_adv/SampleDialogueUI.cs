@@ -57,7 +57,7 @@ public partial class SampleDialogueUI : CanvasLayer, IDialogueCallbacks
         }
     }
 
-    private void OnDialogueStartedSignal()
+    private void OnDialogueStartedSignal(DialogueData data)
     {
         _isDialogueActive = true;
         if (DialoguePanel != null)
