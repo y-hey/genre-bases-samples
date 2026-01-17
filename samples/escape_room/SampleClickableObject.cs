@@ -27,14 +27,20 @@ public partial class SampleClickableObject : InteractableBase
 
     private SampleEscapeRoomManager? _manager;
     private SampleInventory? _inventory;
-    private Sprite2D? _sprite;
+    private CanvasItem? _visual;
+    private Color _originalColor;
     private bool _itemTaken;
 
     public override void _Ready()
     {
         base._Ready();
 
-        _sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        // Visual（ColorRectまたはSprite2D）を取得
+        _visual = GetNodeOrNull<CanvasItem>("Visual");
+        if (_visual != null)
+        {
+            _originalColor = _visual.Modulate;
+        }
 
         // マネージャーとインベントリを探す
         var scene = GetTree().CurrentScene;
@@ -85,9 +91,9 @@ public partial class SampleClickableObject : InteractableBase
             _itemTaken = true;
 
             // 見た目を変える（薄くする）
-            if (_sprite != null)
+            if (_visual != null)
             {
-                _sprite.Modulate = new Color(1, 1, 1, 0.3f);
+                _visual.Modulate = new Color(_originalColor.R, _originalColor.G, _originalColor.B, 0.3f);
             }
         }
     }
@@ -121,9 +127,9 @@ public partial class SampleClickableObject : InteractableBase
 
             // 使用後の処理（例：ドアが開くなど）
             IsInteractable = false;
-            if (_sprite != null)
+            if (_visual != null)
             {
-                _sprite.Modulate = new Color(0.5f, 1, 0.5f);
+                _visual.Modulate = new Color(0.5f, 1, 0.5f);
             }
         }
         else
@@ -134,17 +140,21 @@ public partial class SampleClickableObject : InteractableBase
 
     protected override void OnMouseEntered()
     {
-        if (_sprite != null && IsInteractable)
+        if (_visual != null && IsInteractable)
         {
-            _sprite.Modulate = new Color(1.2f, 1.2f, 1.2f);
+            _visual.Modulate = new Color(
+                _originalColor.R * 1.3f,
+                _originalColor.G * 1.3f,
+                _originalColor.B * 1.3f,
+                _originalColor.A);
         }
     }
 
     protected override void OnMouseExited()
     {
-        if (_sprite != null && IsInteractable && !_itemTaken)
+        if (_visual != null && IsInteractable && !_itemTaken)
         {
-            _sprite.Modulate = new Color(1, 1, 1);
+            _visual.Modulate = _originalColor;
         }
     }
 }

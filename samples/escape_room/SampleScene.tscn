@@ -6,33 +6,33 @@
 [ext_resource type="Script" path="res://samples/escape_room/SampleCodePuzzle.cs" id="4_puzzle"]
 [ext_resource type="Script" path="res://samples/escape_room/SampleClickableObject.cs" id="5_clickable"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_item"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_desk"]
+size = Vector2(200, 120)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_key"]
 size = Vector2(60, 60)
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_desk"]
-size = Vector2(64, 64)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_safe"]
+size = Vector2(120, 160)
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_key"]
-size = Vector2(64, 64)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_door"]
+size = Vector2(120, 240)
 
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_safe"]
-size = Vector2(64, 64)
-
-[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_door"]
-size = Vector2(64, 64)
+[sub_resource type="PlaceholderTexture2D" id="PlaceholderTexture2D_1"]
+size = Vector2(200, 120)
 
 [node name="SampleScene" type="Node2D"]
 
 [node name="Background" type="ColorRect" parent="."]
-offset_right = 1280.0
-offset_bottom = 720.0
+offset_right = 1920.0
+offset_bottom = 1080.0
 color = Color(0.15, 0.15, 0.2, 1)
 
 [node name="RoomLabel" type="Label" parent="."]
-offset_left = 540.0
-offset_top = 20.0
-offset_right = 740.0
-offset_bottom = 50.0
+offset_left = 860.0
+offset_top = 30.0
+offset_right = 1060.0
+offset_bottom = 70.0
 text = "謎の部屋"
 horizontal_alignment = 1
 
@@ -53,23 +53,27 @@ script = ExtResource("3_progress")
 [node name="Clickables" type="Node2D" parent="."]
 
 [node name="Desk" type="Area2D" parent="Clickables"]
-position = Vector2(300, 500)
+position = Vector2(400, 700)
+input_pickable = true
 script = ExtResource("5_clickable")
 ObjectId = "desk"
 DisplayName = "机"
 Description = "古びた机。引き出しには「1234」と書かれたメモがある。"
 Type = 0
 
-[node name="Sprite2D" type="Sprite2D" parent="Clickables/Desk"]
-modulate = Color(0.6, 0.4, 0.2, 1)
-scale = Vector2(2, 1.5)
-texture = SubResource("PlaceholderTexture2D_desk")
+[node name="Visual" type="ColorRect" parent="Clickables/Desk"]
+offset_left = -100.0
+offset_top = -60.0
+offset_right = 100.0
+offset_bottom = 60.0
+color = Color(0.6, 0.4, 0.2, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Clickables/Desk"]
-shape = SubResource("RectangleShape2D_item")
+shape = SubResource("RectangleShape2D_desk")
 
 [node name="KeyItem" type="Area2D" parent="Clickables"]
-position = Vector2(800, 400)
+position = Vector2(1200, 500)
+input_pickable = true
 script = ExtResource("5_clickable")
 ObjectId = "key_item"
 DisplayName = "鍵"
@@ -77,17 +81,19 @@ Description = "小さな鍵。どこかで使えそう。"
 Type = 1
 ItemId = "key"
 
-[node name="Sprite2D" type="Sprite2D" parent="Clickables/KeyItem"]
-modulate = Color(1, 0.8, 0, 1)
-scale = Vector2(0.5, 0.5)
-texture = SubResource("PlaceholderTexture2D_key")
+[node name="Visual" type="ColorRect" parent="Clickables/KeyItem"]
+offset_left = -30.0
+offset_top = -30.0
+offset_right = 30.0
+offset_bottom = 30.0
+color = Color(1, 0.8, 0, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Clickables/KeyItem"]
-scale = Vector2(0.5, 0.5)
-shape = SubResource("RectangleShape2D_item")
+shape = SubResource("RectangleShape2D_key")
 
 [node name="Safe" type="Area2D" parent="Clickables"]
-position = Vector2(640, 300)
+position = Vector2(960, 450)
+input_pickable = true
 script = ExtResource("5_clickable")
 ObjectId = "safe"
 DisplayName = "金庫"
@@ -95,17 +101,19 @@ Description = "4桁の暗証番号式の金庫。"
 Type = 2
 PuzzlePath = NodePath("../../CodePuzzle")
 
-[node name="Sprite2D" type="Sprite2D" parent="Clickables/Safe"]
-modulate = Color(0.5, 0.5, 0.5, 1)
-scale = Vector2(1.5, 2)
-texture = SubResource("PlaceholderTexture2D_safe")
+[node name="Visual" type="ColorRect" parent="Clickables/Safe"]
+offset_left = -60.0
+offset_top = -80.0
+offset_right = 60.0
+offset_bottom = 80.0
+color = Color(0.5, 0.5, 0.5, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Clickables/Safe"]
-scale = Vector2(1.5, 2)
-shape = SubResource("RectangleShape2D_item")
+shape = SubResource("RectangleShape2D_safe")
 
 [node name="Door" type="Area2D" parent="Clickables"]
-position = Vector2(1100, 350)
+position = Vector2(1700, 500)
+input_pickable = true
 script = ExtResource("5_clickable")
 ObjectId = "door"
 DisplayName = "ドア"
@@ -113,14 +121,15 @@ Description = "出口のドア。鍵が必要。"
 Type = 3
 RequiredItemId = "key"
 
-[node name="Sprite2D" type="Sprite2D" parent="Clickables/Door"]
-modulate = Color(0.4, 0.25, 0.1, 1)
-scale = Vector2(1.5, 3)
-texture = SubResource("PlaceholderTexture2D_door")
+[node name="Visual" type="ColorRect" parent="Clickables/Door"]
+offset_left = -60.0
+offset_top = -120.0
+offset_right = 60.0
+offset_bottom = 120.0
+color = Color(0.4, 0.25, 0.1, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Clickables/Door"]
-scale = Vector2(1.5, 3)
-shape = SubResource("RectangleShape2D_item")
+shape = SubResource("RectangleShape2D_door")
 
 [node name="CodePuzzle" type="Control" parent="." node_paths=PackedStringArray("CodeInput", "SubmitButton", "CloseButton", "ResultLabel")]
 visible = false
@@ -129,10 +138,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -150.0
-offset_top = -100.0
-offset_right = 150.0
-offset_bottom = 100.0
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
 script = ExtResource("4_puzzle")
 PuzzleId = "door_lock"
 CorrectCode = "1234"
@@ -153,10 +162,10 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = -20.0
+offset_left = 30.0
+offset_top = 30.0
+offset_right = -30.0
+offset_bottom = -30.0
 
 [node name="Label" type="Label" parent="CodePuzzle/VBoxContainer"]
 layout_mode = 2
@@ -184,17 +193,17 @@ text = "閉じる"
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="MessageLabel" type="Label" parent="UI"]
-offset_left = 20.0
-offset_top = 650.0
-offset_right = 1260.0
-offset_bottom = 700.0
-text = "部屋を調べて脱出しよう"
+offset_left = 30.0
+offset_top = 1000.0
+offset_right = 1890.0
+offset_bottom = 1050.0
+text = "部屋を調べて脱出しよう（オブジェクトをクリック）"
 
 [node name="InventoryPanel" type="PanelContainer" parent="UI"]
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 400.0
-offset_bottom = 80.0
+offset_left = 30.0
+offset_top = 100.0
+offset_right = 500.0
+offset_bottom = 180.0
 
 [node name="VBox" type="VBoxContainer" parent="UI/InventoryPanel"]
 layout_mode = 2
@@ -220,10 +229,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -100.0
-offset_top = -20.0
-offset_right = 100.0
-offset_bottom = 20.0
+offset_left = -200.0
+offset_top = -40.0
+offset_right = 200.0
+offset_bottom = 40.0
 text = "脱出成功！"
 horizontal_alignment = 1
 vertical_alignment = 1
