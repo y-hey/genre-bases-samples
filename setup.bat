@@ -29,6 +29,12 @@ if exist addons\sidescroll_adv_base (
     mklink /J addons\sidescroll_adv_base libs\sidescroll-adv-base\addons\sidescroll_adv_base
 )
 
+if exist addons\escape_room_base (
+    echo   escape_room_base: 既に存在します
+) else (
+    mklink /J addons\escape_room_base libs\escape-room-base\addons\escape_room_base
+)
+
 echo [3/3] 完了!
 echo.
 echo Godotでproject.godotを開いてサンプルを実行してください。

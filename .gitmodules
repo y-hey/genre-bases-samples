@@ -7,3 +7,6 @@
 [submodule "libs/y2-godot-core-lib"]
 	path = libs/y2-godot-core-lib
 	url = https://github.com/y-hey/y2-godot-core-lib.git
+[submodule "libs/escape-room-base"]
+	path = libs/escape-room-base
+	url = https://github.com/y-hey/escape-room-base.git

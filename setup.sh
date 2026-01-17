@@ -28,6 +28,12 @@ else
     ln -s ../libs/sidescroll-adv-base/addons/sidescroll_adv_base addons/sidescroll_adv_base
 fi
 
+if [ -L addons/escape_room_base ] || [ -d addons/escape_room_base ]; then
+    echo "  escape_room_base: 既に存在します"
+else
+    ln -s ../libs/escape-room-base/addons/escape_room_base addons/escape_room_base
+fi
+
 echo "[3/3] 完了!"
 echo
 echo "Godotでproject.godotを開いてサンプルを実行してください。"

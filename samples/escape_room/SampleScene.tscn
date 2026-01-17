@@ -1,0 +1,217 @@
+[gd_scene load_steps=7 format=3 uid="uid://cescaperoom001"]
+
+[ext_resource type="Script" path="res://samples/escape_room/SampleEscapeRoomManager.cs" id="1_manager"]
+[ext_resource type="Script" path="res://samples/escape_room/SampleInventory.cs" id="2_inventory"]
+[ext_resource type="Script" path="res://samples/escape_room/SampleProgressTracker.cs" id="3_progress"]
+[ext_resource type="Script" path="res://samples/escape_room/SampleCodePuzzle.cs" id="4_puzzle"]
+[ext_resource type="Script" path="res://samples/escape_room/SampleClickableObject.cs" id="5_clickable"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_item"]
+size = Vector2(60, 60)
+
+[node name="SampleScene" type="Node2D"]
+
+[node name="Background" type="ColorRect" parent="."]
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.15, 0.15, 0.2, 1)
+
+[node name="RoomLabel" type="Label" parent="."]
+offset_left = 540.0
+offset_top = 20.0
+offset_right = 740.0
+offset_bottom = 50.0
+text = "謎の部屋"
+horizontal_alignment = 1
+
+[node name="EscapeRoomManager" type="Node" parent="." node_paths=PackedStringArray("Inventory", "Progress", "MessageLabel", "ClearScreen")]
+script = ExtResource("1_manager")
+Inventory = NodePath("Inventory")
+Progress = NodePath("Progress")
+MessageLabel = NodePath("../UI/MessageLabel")
+ClearScreen = NodePath("../UI/ClearScreen")
+
+[node name="Inventory" type="Node" parent="EscapeRoomManager" node_paths=PackedStringArray("ItemContainer")]
+script = ExtResource("2_inventory")
+ItemContainer = NodePath("../../UI/InventoryPanel/ItemContainer")
+
+[node name="Progress" type="Node" parent="EscapeRoomManager"]
+script = ExtResource("3_progress")
+
+[node name="Clickables" type="Node2D" parent="."]
+
+[node name="Desk" type="Area2D" parent="Clickables"]
+position = Vector2(300, 500)
+script = ExtResource("5_clickable")
+ObjectId = "desk"
+DisplayName = "机"
+Description = "古びた机。引き出しには「1234」と書かれたメモがある。"
+Type = 0
+
+[node name="Sprite2D" type="Sprite2D" parent="Clickables/Desk"]
+modulate = Color(0.6, 0.4, 0.2, 1)
+scale = Vector2(2, 1.5)
+texture = PlaceholderTexture2D
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Clickables/Desk"]
+shape = SubResource("RectangleShape2D_item")
+
+[node name="KeyItem" type="Area2D" parent="Clickables"]
+position = Vector2(800, 400)
+script = ExtResource("5_clickable")
+ObjectId = "key_item"
+DisplayName = "鍵"
+Description = "小さな鍵。どこかで使えそう。"
+Type = 1
+ItemId = "key"
+
+[node name="Sprite2D" type="Sprite2D" parent="Clickables/KeyItem"]
+modulate = Color(1, 0.8, 0, 1)
+scale = Vector2(0.5, 0.5)
+texture = PlaceholderTexture2D
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Clickables/KeyItem"]
+scale = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_item")
+
+[node name="Safe" type="Area2D" parent="Clickables"]
+position = Vector2(640, 300)
+script = ExtResource("5_clickable")
+ObjectId = "safe"
+DisplayName = "金庫"
+Description = "4桁の暗証番号式の金庫。"
+Type = 2
+PuzzlePath = NodePath("../../CodePuzzle")
+
+[node name="Sprite2D" type="Sprite2D" parent="Clickables/Safe"]
+modulate = Color(0.5, 0.5, 0.5, 1)
+scale = Vector2(1.5, 2)
+texture = PlaceholderTexture2D
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Clickables/Safe"]
+scale = Vector2(1.5, 2)
+shape = SubResource("RectangleShape2D_item")
+
+[node name="Door" type="Area2D" parent="Clickables"]
+position = Vector2(1100, 350)
+script = ExtResource("5_clickable")
+ObjectId = "door"
+DisplayName = "ドア"
+Description = "出口のドア。鍵が必要。"
+Type = 3
+RequiredItemId = "key"
+
+[node name="Sprite2D" type="Sprite2D" parent="Clickables/Door"]
+modulate = Color(0.4, 0.25, 0.1, 1)
+scale = Vector2(1.5, 3)
+texture = PlaceholderTexture2D
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Clickables/Door"]
+scale = Vector2(1.5, 3)
+shape = SubResource("RectangleShape2D_item")
+
+[node name="CodePuzzle" type="Control" parent="." node_paths=PackedStringArray("CodeInput", "SubmitButton", "CloseButton", "ResultLabel")]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = 100.0
+script = ExtResource("4_puzzle")
+PuzzleId = "door_lock"
+CorrectCode = "1234"
+CodeInput = NodePath("VBoxContainer/CodeInput")
+SubmitButton = NodePath("VBoxContainer/SubmitButton")
+CloseButton = NodePath("VBoxContainer/CloseButton")
+ResultLabel = NodePath("VBoxContainer/ResultLabel")
+
+[node name="Background" type="ColorRect" parent="CodePuzzle"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.2, 0.2, 0.3, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CodePuzzle"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = 20.0
+offset_right = -20.0
+offset_bottom = -20.0
+
+[node name="Label" type="Label" parent="CodePuzzle/VBoxContainer"]
+layout_mode = 2
+text = "暗証番号を入力"
+horizontal_alignment = 1
+
+[node name="CodeInput" type="LineEdit" parent="CodePuzzle/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "4桁の数字"
+alignment = 1
+max_length = 4
+
+[node name="SubmitButton" type="Button" parent="CodePuzzle/VBoxContainer"]
+layout_mode = 2
+text = "決定"
+
+[node name="ResultLabel" type="Label" parent="CodePuzzle/VBoxContainer"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="CloseButton" type="Button" parent="CodePuzzle/VBoxContainer"]
+layout_mode = 2
+text = "閉じる"
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="MessageLabel" type="Label" parent="UI"]
+offset_left = 20.0
+offset_top = 650.0
+offset_right = 1260.0
+offset_bottom = 700.0
+text = "部屋を調べて脱出しよう"
+
+[node name="InventoryPanel" type="PanelContainer" parent="UI"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 400.0
+offset_bottom = 80.0
+
+[node name="VBox" type="VBoxContainer" parent="UI/InventoryPanel"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="UI/InventoryPanel/VBox"]
+layout_mode = 2
+text = "所持品"
+
+[node name="ItemContainer" type="HBoxContainer" parent="UI/InventoryPanel"]
+layout_mode = 2
+
+[node name="ClearScreen" type="ColorRect" parent="UI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.8)
+
+[node name="ClearLabel" type="Label" parent="UI/ClearScreen"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -20.0
+offset_right = 100.0
+offset_bottom = 20.0
+text = "脱出成功！"
+horizontal_alignment = 1
+vertical_alignment = 1
