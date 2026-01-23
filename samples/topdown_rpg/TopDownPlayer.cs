@@ -13,18 +13,30 @@ public partial class TopDownPlayer : CharacterBody2D
     [Export] public float AttackDuration { get; set; } = 0.3f;
     [Export] public float InvincibleDuration { get; set; } = 1.0f;
     [Export] public int AttackDamage { get; set; } = 1;
+    [Export] public float KnockbackDuration { get; set; } = 0.15f;
+    [Export] public float KnockbackSpeed { get; set; } = 300.0f;
+    [Export] public float KnockbackDeceleration { get; set; } = 1500.0f;
 
     public int CurrentHealth { get; private set; }
     public Vector2 FacingDirection { get; private set; } = Vector2.Down;
     public bool IsAttacking { get; private set; }
     public bool IsInvincible { get; private set; }
+    public bool IsDead { get; private set; }
+
+    private bool _isKnockback;
+    private Vector2 _knockbackVelocity;
 
     private Area2D? _swordHitbox;
-    private AnimatedSprite2D? _sprite;
     private Timer? _attackTimer;
     private Timer? _invincibleTimer;
+    private Timer? _knockbackTimer;
     private ColorRect? _visualBody;
     private ColorRect? _visualSword;
+
+    // 色定数（GC対策）
+    private static readonly Color NormalModulate = Colors.White;
+    private static readonly Color FlashModulateVisible = new(1, 1, 1, 1.0f);
+    private static readonly Color FlashModulateHidden = new(1, 1, 1, 0.3f);
 
     [Signal]
     public delegate void HealthChangedEventHandler(int currentHealth, int maxHealth);
@@ -37,7 +49,6 @@ public partial class TopDownPlayer : CharacterBody2D
         CurrentHealth = MaxHealth;
 
         _swordHitbox = GetNodeOrNull<Area2D>("SwordHitbox");
-        _sprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
         _visualBody = GetNodeOrNull<ColorRect>("VisualBody");
         _visualSword = GetNodeOrNull<ColorRect>("VisualSword");
 
@@ -55,9 +66,17 @@ public partial class TopDownPlayer : CharacterBody2D
         _invincibleTimer.Timeout += OnInvincibleFinished;
         AddChild(_invincibleTimer);
 
+        // ノックバックタイマー
+        _knockbackTimer = new Timer();
+        _knockbackTimer.OneShot = true;
+        _knockbackTimer.WaitTime = KnockbackDuration;
+        _knockbackTimer.Timeout += OnKnockbackFinished;
+        AddChild(_knockbackTimer);
+
         if (_swordHitbox != null)
         {
             _swordHitbox.Visible = false;
+            _swordHitbox.Monitoring = false;
             _swordHitbox.AreaEntered += OnSwordHit;
         }
 
@@ -71,6 +90,28 @@ public partial class TopDownPlayer : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
+        // 死亡時は何もしない
+        if (IsDead)
+        {
+            Velocity = Vector2.Zero;
+            return;
+        }
+
+        // 無敵時の点滅は常に更新
+        UpdateInvincibleFlash();
+
+        // ノックバック中
+        if (_isKnockback)
+        {
+            // 減速処理
+            var decel = KnockbackDeceleration * (float)delta;
+            _knockbackVelocity = _knockbackVelocity.MoveToward(Vector2.Zero, decel);
+            Velocity = _knockbackVelocity;
+            MoveAndSlide();
+            return;
+        }
+
+        // 攻撃中は移動不可だが、UpdateVisualsは呼ばない（点滅は上で処理済み）
         if (IsAttacking)
         {
             Velocity = Vector2.Zero;
@@ -81,7 +122,6 @@ public partial class TopDownPlayer : CharacterBody2D
         HandleMovement();
         HandleAttack();
         MoveAndSlide();
-        UpdateVisuals();
     }
 
     private void HandleMovement()
@@ -171,15 +211,16 @@ public partial class TopDownPlayer : CharacterBody2D
 
     public void TakeDamage(int damage, Vector2 sourcePosition)
     {
-        if (IsInvincible || CurrentHealth <= 0) return;
+        if (IsInvincible || IsDead || CurrentHealth <= 0) return;
 
         CurrentHealth -= damage;
         EmitSignal(SignalName.HealthChanged, CurrentHealth, MaxHealth);
 
-        // ノックバック
+        // ノックバック開始（_PhysicsProcess内で処理）
         var knockbackDir = (GlobalPosition - sourcePosition).Normalized();
-        Velocity = knockbackDir * 300;
-        MoveAndSlide();
+        _knockbackVelocity = knockbackDir * KnockbackSpeed;
+        _isKnockback = true;
+        _knockbackTimer?.Start();
 
         if (CurrentHealth <= 0)
         {
@@ -191,6 +232,12 @@ public partial class TopDownPlayer : CharacterBody2D
         }
     }
 
+    private void OnKnockbackFinished()
+    {
+        _isKnockback = false;
+        _knockbackVelocity = Vector2.Zero;
+    }
+
     private void StartInvincibility()
     {
         IsInvincible = true;
@@ -200,30 +247,40 @@ public partial class TopDownPlayer : CharacterBody2D
     private void OnInvincibleFinished()
     {
         IsInvincible = false;
+        // 点滅終了時に確実に通常色に戻す
+        if (_visualBody != null)
+        {
+            _visualBody.Modulate = NormalModulate;
+        }
     }
 
     private void Die()
     {
+        IsDead = true;
         GD.Print("プレイヤー死亡");
         EmitSignal(SignalName.PlayerDied);
     }
 
     public void Heal(int amount)
     {
+        if (IsDead) return;
         CurrentHealth = Mathf.Min(CurrentHealth + amount, MaxHealth);
         EmitSignal(SignalName.HealthChanged, CurrentHealth, MaxHealth);
     }
 
-    private void UpdateVisuals()
+    private void UpdateInvincibleFlash()
     {
-        // 無敵時の点滅
-        if (_visualBody != null && IsInvincible)
+        if (_visualBody == null) return;
+
+        if (IsInvincible)
         {
-            _visualBody.Modulate = new Color(1, 1, 1, Mathf.Sin((float)Time.GetTicksMsec() / 50) > 0 ? 1.0f : 0.3f);
+            // 点滅（Sinを使わず、タイムベースで交互に）
+            var flash = ((int)(Time.GetTicksMsec() / 100)) % 2 == 0;
+            _visualBody.Modulate = flash ? FlashModulateVisible : FlashModulateHidden;
         }
-        else if (_visualBody != null)
+        else
         {
-            _visualBody.Modulate = Colors.White;
+            _visualBody.Modulate = NormalModulate;
         }
     }
 

@@ -9,8 +9,13 @@ namespace TopDownRpgSample;
 public partial class HeartPickup : Area2D
 {
     [Export] public int HealAmount { get; set; } = 2;
+    [Export] public float FloatAmplitude { get; set; } = 4.0f;
+    [Export] public float FloatSpeed { get; set; } = 3.0f;
 
     private bool _isPickedUp;
+    private float _baseY;
+    private float _floatTime;
+    private Tween? _spawnTween;
 
     public override void _Ready()
     {
@@ -18,27 +23,39 @@ public partial class HeartPickup : Area2D
 
         // 出現アニメーション
         Scale = Vector2.Zero;
-        var tween = CreateTween();
-        tween.TweenProperty(this, "scale", Vector2.One, 0.2f)
+        _spawnTween = CreateTween();
+        _spawnTween.TweenProperty(this, "scale", Vector2.One, 0.2f)
             .SetEase(Tween.EaseType.Out)
             .SetTrans(Tween.TransitionType.Back);
+    }
 
-        // ゆらゆら浮遊アニメーション
-        var floatTween = CreateTween();
-        floatTween.SetLoops();
-        floatTween.TweenProperty(this, "position:y", Position.Y - 5, 0.5f)
-            .SetEase(Tween.EaseType.InOut)
-            .SetTrans(Tween.TransitionType.Sine);
-        floatTween.TweenProperty(this, "position:y", Position.Y + 5, 0.5f)
-            .SetEase(Tween.EaseType.InOut)
-            .SetTrans(Tween.TransitionType.Sine);
+    public override void _Process(double delta)
+    {
+        if (_isPickedUp) return;
+
+        // 出現アニメーション完了後に浮遊開始
+        if (_spawnTween != null && _spawnTween.IsRunning())
+        {
+            return;
+        }
+
+        // 初回のみベース位置を記録
+        if (_floatTime == 0)
+        {
+            _baseY = Position.Y;
+        }
+
+        // 浮遊アニメーション（サイン波）
+        _floatTime += (float)delta * FloatSpeed;
+        var offsetY = Mathf.Sin(_floatTime) * FloatAmplitude;
+        Position = new Vector2(Position.X, _baseY + offsetY);
     }
 
     private void OnBodyEntered(Node2D body)
     {
         if (_isPickedUp) return;
 
-        if (body is TopDownPlayer player)
+        if (body is TopDownPlayer player && !player.IsDead)
         {
             _isPickedUp = true;
             player.Heal(HealAmount);

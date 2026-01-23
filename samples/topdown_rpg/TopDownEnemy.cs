@@ -24,7 +24,9 @@ public partial class TopDownEnemy : CharacterBody2D
     [Export] public int MaxHealth { get; set; } = 2;
     [Export] public int ContactDamage { get; set; } = 1;
     [Export] public float WanderInterval { get; set; } = 2.0f;
-    [Export] public float HurtDuration { get; set; } = 0.3f;
+    [Export] public float HurtDuration { get; set; } = 0.2f;
+    [Export] public float KnockbackSpeed { get; set; } = 200.0f;
+    [Export] public float KnockbackDeceleration { get; set; } = 1200.0f;
 
     public int CurrentHealth { get; private set; }
     public EnemyState State { get; private set; } = EnemyState.Idle;
@@ -33,8 +35,13 @@ public partial class TopDownEnemy : CharacterBody2D
     private Timer? _wanderTimer;
     private Timer? _hurtTimer;
     private Vector2 _wanderDirection;
+    private Vector2 _knockbackVelocity;
     private ColorRect? _visual;
     private Area2D? _hitbox;
+
+    // 色定数（GC対策）
+    private static readonly Color DamageColor = Colors.Red;
+    private static readonly Color NormalColor = Colors.White;
 
     [Signal]
     public delegate void EnemyDiedEventHandler(TopDownEnemy enemy);
@@ -80,6 +87,10 @@ public partial class TopDownEnemy : CharacterBody2D
 
         if (State == EnemyState.Hurt)
         {
+            // ノックバック中は減速しながら移動
+            var decel = KnockbackDeceleration * (float)delta;
+            _knockbackVelocity = _knockbackVelocity.MoveToward(Vector2.Zero, decel);
+            Velocity = _knockbackVelocity;
             MoveAndSlide();
             return;
         }
@@ -91,7 +102,7 @@ public partial class TopDownEnemy : CharacterBody2D
 
     private void UpdateState()
     {
-        if (_player == null || State == EnemyState.Hurt) return;
+        if (_player == null || _player.IsDead) return;
 
         var distanceToPlayer = GlobalPosition.DistanceTo(_player.GlobalPosition);
 
@@ -118,10 +129,14 @@ public partial class TopDownEnemy : CharacterBody2D
                 break;
 
             case EnemyState.Chase:
-                if (_player != null)
+                if (_player != null && !_player.IsDead)
                 {
                     var direction = (_player.GlobalPosition - GlobalPosition).Normalized();
                     Velocity = direction * ChaseSpeed;
+                }
+                else
+                {
+                    Velocity = Vector2.Zero;
                 }
                 break;
         }
@@ -129,6 +144,8 @@ public partial class TopDownEnemy : CharacterBody2D
 
     private void OnWanderTimerTimeout()
     {
+        if (State == EnemyState.Hurt || State == EnemyState.Dead) return;
+
         // ランダムな方向に徘徊
         var angle = GD.Randf() * Mathf.Tau;
         _wanderDirection = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle));
@@ -142,7 +159,7 @@ public partial class TopDownEnemy : CharacterBody2D
 
     private void OnBodyEntered(Node2D body)
     {
-        if (body is TopDownPlayer player && State != EnemyState.Dead)
+        if (body is TopDownPlayer player && State != EnemyState.Dead && State != EnemyState.Hurt)
         {
             player.TakeDamage(ContactDamage, GlobalPosition);
         }
@@ -154,16 +171,16 @@ public partial class TopDownEnemy : CharacterBody2D
 
         CurrentHealth -= damage;
 
-        // ノックバック
+        // ノックバック開始
         State = EnemyState.Hurt;
         var knockbackDir = (GlobalPosition - sourcePosition).Normalized();
-        Velocity = knockbackDir * 200;
+        _knockbackVelocity = knockbackDir * KnockbackSpeed;
         _hurtTimer?.Start();
 
         // ダメージエフェクト
         if (_visual != null)
         {
-            _visual.Modulate = Colors.Red;
+            _visual.Modulate = DamageColor;
         }
 
         if (CurrentHealth <= 0)
@@ -177,21 +194,31 @@ public partial class TopDownEnemy : CharacterBody2D
         if (State == EnemyState.Dead) return;
 
         State = EnemyState.Idle;
+        _knockbackVelocity = Vector2.Zero;
         if (_visual != null)
         {
-            _visual.Modulate = Colors.White;
+            _visual.Modulate = NormalColor;
         }
     }
 
     private void Die()
     {
         State = EnemyState.Dead;
+        _knockbackVelocity = Vector2.Zero;
+        Velocity = Vector2.Zero;
+
+        // Hitboxを無効化（死亡後にダメージを与えないように）
+        if (_hitbox != null)
+        {
+            _hitbox.SetDeferred("monitoring", false);
+        }
+
         EmitSignal(SignalName.EnemyDied, this);
 
         // アイテムドロップのチャンス
         if (GD.Randf() < 0.3f)
         {
-            SpawnHeart();
+            CallDeferred(nameof(SpawnHeart));
         }
 
         // 死亡エフェクト後に削除
@@ -203,11 +230,11 @@ public partial class TopDownEnemy : CharacterBody2D
     private void SpawnHeart()
     {
         var heartScene = GD.Load<PackedScene>("res://samples/topdown_rpg/HeartPickup.tscn");
-        if (heartScene != null)
-        {
-            var heart = heartScene.Instantiate<Node2D>();
-            heart.GlobalPosition = GlobalPosition;
-            GetParent().AddChild(heart);
-        }
+        if (heartScene == null) return;
+
+        var heart = heartScene.Instantiate<Node2D>();
+        // AddChild後にGlobalPositionを設定（座標系が確定してから）
+        GetParent().AddChild(heart);
+        heart.GlobalPosition = GlobalPosition;
     }
 }

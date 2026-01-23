@@ -73,6 +73,8 @@ shape = SubResource("RectangleShape2D_sword")
 
 [node name="Camera2D" type="Camera2D" parent="Player"]
 zoom = Vector2(2, 2)
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
 limit_left = 0
 limit_top = 0
 limit_right = 800
@@ -295,10 +297,6 @@ shape = SubResource("RectangleShape2D_breakable")
 [node name="WallTop" type="StaticBody2D" parent="Walls"]
 position = Vector2(400, 16)
 collision_layer = 4
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/WallTop"]
-shape = SubResource("RectangleShape2D_wall")
-one_way_collision_margin = 0.0
 
 [node name="Visual" type="ColorRect" parent="Walls/WallTop"]
 offset_left = -400.0
