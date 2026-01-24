@@ -1,0 +1,427 @@
+[gd_scene load_steps=12 format=3 uid="uid://ctopdownrpg001"]
+
+[ext_resource type="Script" path="res://samples/topdown_rpg/TopDownPlayer.cs" id="1_player"]
+[ext_resource type="Script" path="res://samples/topdown_rpg/TopDownEnemy.cs" id="2_enemy"]
+[ext_resource type="Script" path="res://samples/topdown_rpg/BreakableObject.cs" id="3_breakable"]
+[ext_resource type="Script" path="res://samples/topdown_rpg/GameManager.cs" id="4_manager"]
+[ext_resource type="Script" path="res://samples/topdown_rpg/HealthDisplay.cs" id="5_health"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_player"]
+size = Vector2(28, 28)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sword"]
+size = Vector2(40, 30)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_enemy"]
+size = Vector2(28, 28)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_enemy_hitbox"]
+radius = 18.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_breakable"]
+size = Vector2(30, 30)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(32, 32)
+
+[node name="SampleScene" type="Node2D"]
+
+[node name="Background" type="ColorRect" parent="."]
+offset_left = -1000.0
+offset_top = -1000.0
+offset_right = 2000.0
+offset_bottom = 2000.0
+color = Color(0.2, 0.35, 0.2, 1)
+
+[node name="GameManager" type="Node" parent="." node_paths=PackedStringArray("Player", "GameOverScreen", "EnemyCountLabel")]
+script = ExtResource("4_manager")
+Player = NodePath("../Player")
+GameOverScreen = NodePath("../UI/GameOverScreen")
+EnemyCountLabel = NodePath("../UI/EnemyCountLabel")
+
+[node name="Player" type="CharacterBody2D" parent="." groups=["player"]]
+position = Vector2(400, 300)
+collision_layer = 1
+collision_mask = 6
+script = ExtResource("1_player")
+
+[node name="VisualBody" type="ColorRect" parent="Player"]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(0.2, 0.6, 0.2, 1)
+
+[node name="VisualSword" type="ColorRect" parent="Player"]
+visible = false
+offset_left = 20.0
+offset_top = -8.0
+offset_right = 60.0
+offset_bottom = 8.0
+color = Color(0.7, 0.7, 0.8, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("RectangleShape2D_player")
+
+[node name="SwordHitbox" type="Area2D" parent="Player"]
+visible = false
+collision_layer = 8
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/SwordHitbox"]
+shape = SubResource("RectangleShape2D_sword")
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+zoom = Vector2(2, 2)
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0
+limit_left = 0
+limit_top = 0
+limit_right = 800
+limit_bottom = 600
+
+[node name="Enemies" type="Node2D" parent="."]
+
+[node name="Enemy1" type="CharacterBody2D" parent="Enemies" groups=["enemies"]]
+position = Vector2(600, 200)
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("2_enemy")
+
+[node name="Visual" type="ColorRect" parent="Enemies/Enemy1"]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(0.8, 0.2, 0.2, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Enemies/Enemy1"]
+shape = SubResource("RectangleShape2D_enemy")
+
+[node name="Hitbox" type="Area2D" parent="Enemies/Enemy1"]
+collision_layer = 16
+collision_mask = 9
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Enemies/Enemy1/Hitbox"]
+shape = SubResource("CircleShape2D_enemy_hitbox")
+
+[node name="Enemy2" type="CharacterBody2D" parent="Enemies" groups=["enemies"]]
+position = Vector2(200, 450)
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("2_enemy")
+
+[node name="Visual" type="ColorRect" parent="Enemies/Enemy2"]
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(0.8, 0.2, 0.2, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Enemies/Enemy2"]
+shape = SubResource("RectangleShape2D_enemy")
+
+[node name="Hitbox" type="Area2D" parent="Enemies/Enemy2"]
+collision_layer = 16
+collision_mask = 9
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Enemies/Enemy2/Hitbox"]
+shape = SubResource("CircleShape2D_enemy_hitbox")
+
+[node name="Enemy3" type="CharacterBody2D" parent="Enemies" groups=["enemies"]]
+position = Vector2(650, 450)
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("2_enemy")
+ChaseSpeed = 150.0
+MaxHealth = 3
+
+[node name="Visual" type="ColorRect" parent="Enemies/Enemy3"]
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+color = Color(0.6, 0.1, 0.1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Enemies/Enemy3"]
+shape = SubResource("RectangleShape2D_enemy")
+
+[node name="Hitbox" type="Area2D" parent="Enemies/Enemy3"]
+collision_layer = 16
+collision_mask = 9
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Enemies/Enemy3/Hitbox"]
+shape = SubResource("CircleShape2D_enemy_hitbox")
+
+[node name="Breakables" type="Node2D" parent="."]
+
+[node name="Grass1" type="StaticBody2D" parent="Breakables"]
+position = Vector2(150, 200)
+collision_layer = 4
+script = ExtResource("3_breakable")
+
+[node name="Visual" type="ColorRect" parent="Breakables/Grass1"]
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+color = Color(0.2, 0.7, 0.2, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Grass1"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Hitbox" type="Area2D" parent="Breakables/Grass1"]
+collision_layer = 16
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Grass1/Hitbox"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Grass2" type="StaticBody2D" parent="Breakables"]
+position = Vector2(180, 200)
+collision_layer = 4
+script = ExtResource("3_breakable")
+
+[node name="Visual" type="ColorRect" parent="Breakables/Grass2"]
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+color = Color(0.2, 0.7, 0.2, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Grass2"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Hitbox" type="Area2D" parent="Breakables/Grass2"]
+collision_layer = 16
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Grass2/Hitbox"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Grass3" type="StaticBody2D" parent="Breakables"]
+position = Vector2(210, 200)
+collision_layer = 4
+script = ExtResource("3_breakable")
+
+[node name="Visual" type="ColorRect" parent="Breakables/Grass3"]
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+color = Color(0.2, 0.7, 0.2, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Grass3"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Hitbox" type="Area2D" parent="Breakables/Grass3"]
+collision_layer = 16
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Grass3/Hitbox"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Pot1" type="StaticBody2D" parent="Breakables"]
+position = Vector2(500, 150)
+collision_layer = 4
+script = ExtResource("3_breakable")
+Type = 1
+HeartDropChance = 0.5
+
+[node name="Visual" type="ColorRect" parent="Breakables/Pot1"]
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+color = Color(0.6, 0.4, 0.2, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Pot1"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Hitbox" type="Area2D" parent="Breakables/Pot1"]
+collision_layer = 16
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Pot1/Hitbox"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Pot2" type="StaticBody2D" parent="Breakables"]
+position = Vector2(530, 150)
+collision_layer = 4
+script = ExtResource("3_breakable")
+Type = 1
+HeartDropChance = 0.5
+
+[node name="Visual" type="ColorRect" parent="Breakables/Pot2"]
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+color = Color(0.6, 0.4, 0.2, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Pot2"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Hitbox" type="Area2D" parent="Breakables/Pot2"]
+collision_layer = 16
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Pot2/Hitbox"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Bush1" type="StaticBody2D" parent="Breakables"]
+position = Vector2(350, 500)
+collision_layer = 4
+script = ExtResource("3_breakable")
+Type = 2
+
+[node name="Visual" type="ColorRect" parent="Breakables/Bush1"]
+offset_left = -15.0
+offset_top = -15.0
+offset_right = 15.0
+offset_bottom = 15.0
+color = Color(0.1, 0.5, 0.1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Bush1"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Hitbox" type="Area2D" parent="Breakables/Bush1"]
+collision_layer = 16
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Breakables/Bush1/Hitbox"]
+shape = SubResource("RectangleShape2D_breakable")
+
+[node name="Walls" type="Node2D" parent="."]
+
+[node name="WallTop" type="StaticBody2D" parent="Walls"]
+position = Vector2(400, 16)
+collision_layer = 4
+
+[node name="Visual" type="ColorRect" parent="Walls/WallTop"]
+offset_left = -400.0
+offset_top = -16.0
+offset_right = 400.0
+offset_bottom = 16.0
+color = Color(0.3, 0.25, 0.2, 1)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Walls/WallTop"]
+polygon = PackedVector2Array(-400, -16, 400, -16, 400, 16, -400, 16)
+
+[node name="WallBottom" type="StaticBody2D" parent="Walls"]
+position = Vector2(400, 584)
+collision_layer = 4
+
+[node name="Visual" type="ColorRect" parent="Walls/WallBottom"]
+offset_left = -400.0
+offset_top = -16.0
+offset_right = 400.0
+offset_bottom = 16.0
+color = Color(0.3, 0.25, 0.2, 1)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Walls/WallBottom"]
+polygon = PackedVector2Array(-400, -16, 400, -16, 400, 16, -400, 16)
+
+[node name="WallLeft" type="StaticBody2D" parent="Walls"]
+position = Vector2(16, 300)
+collision_layer = 4
+
+[node name="Visual" type="ColorRect" parent="Walls/WallLeft"]
+offset_left = -16.0
+offset_top = -300.0
+offset_right = 16.0
+offset_bottom = 300.0
+color = Color(0.3, 0.25, 0.2, 1)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Walls/WallLeft"]
+polygon = PackedVector2Array(-16, -300, 16, -300, 16, 300, -16, 300)
+
+[node name="WallRight" type="StaticBody2D" parent="Walls"]
+position = Vector2(784, 300)
+collision_layer = 4
+
+[node name="Visual" type="ColorRect" parent="Walls/WallRight"]
+offset_left = -16.0
+offset_top = -300.0
+offset_right = 16.0
+offset_bottom = 300.0
+color = Color(0.3, 0.25, 0.2, 1)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Walls/WallRight"]
+polygon = PackedVector2Array(-16, -300, 16, -300, 16, 300, -16, 300)
+
+[node name="Obstacle1" type="StaticBody2D" parent="Walls"]
+position = Vector2(300, 300)
+collision_layer = 4
+
+[node name="Visual" type="ColorRect" parent="Walls/Obstacle1"]
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+color = Color(0.4, 0.35, 0.3, 1)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Walls/Obstacle1"]
+polygon = PackedVector2Array(-32, -32, 32, -32, 32, 32, -32, 32)
+
+[node name="Obstacle2" type="StaticBody2D" parent="Walls"]
+position = Vector2(550, 350)
+collision_layer = 4
+
+[node name="Visual" type="ColorRect" parent="Walls/Obstacle2"]
+offset_left = -48.0
+offset_top = -24.0
+offset_right = 48.0
+offset_bottom = 24.0
+color = Color(0.4, 0.35, 0.3, 1)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Walls/Obstacle2"]
+polygon = PackedVector2Array(-48, -24, 48, -24, 48, 24, -48, 24)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="HealthDisplay" type="HBoxContainer" parent="UI" node_paths=PackedStringArray("Player")]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 60.0
+script = ExtResource("5_health")
+Player = NodePath("../../Player")
+
+[node name="EnemyCountLabel" type="Label" parent="UI"]
+offset_left = 20.0
+offset_top = 60.0
+offset_right = 150.0
+offset_bottom = 90.0
+text = "敵: 3"
+
+[node name="ControlsLabel" type="Label" parent="UI"]
+offset_left = 20.0
+offset_top = 550.0
+offset_right = 400.0
+offset_bottom = 590.0
+text = "移動: WASD/矢印キー　攻撃: スペースキー"
+
+[node name="GameOverScreen" type="ColorRect" parent="UI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.8)
+
+[node name="Label" type="Label" parent="UI/GameOverScreen"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -50.0
+offset_right = 150.0
+offset_bottom = 50.0
+text = "ゲームオーバー
+
+スペースキーでリトライ"
+horizontal_alignment = 1
+vertical_alignment = 1
