@@ -217,7 +217,16 @@ public partial class TopDownPlayer : CharacterBody2D
         EmitSignal(SignalName.HealthChanged, CurrentHealth, MaxHealth);
 
         // ノックバック開始（_PhysicsProcess内で処理）
-        var knockbackDir = (GlobalPosition - sourcePosition).Normalized();
+        var knockbackDir = GlobalPosition - sourcePosition;
+        if (knockbackDir.LengthSquared() > 0.0001f)
+        {
+            knockbackDir = knockbackDir.Normalized();
+        }
+        else
+        {
+            // 同一位置の場合はランダム方向
+            knockbackDir = Vector2.Right.Rotated(GD.Randf() * Mathf.Tau);
+        }
         _knockbackVelocity = knockbackDir * KnockbackSpeed;
         _isKnockback = true;
         _knockbackTimer?.Start();

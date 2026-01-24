@@ -173,7 +173,16 @@ public partial class TopDownEnemy : CharacterBody2D
 
         // ノックバック開始
         State = EnemyState.Hurt;
-        var knockbackDir = (GlobalPosition - sourcePosition).Normalized();
+        var knockbackDir = GlobalPosition - sourcePosition;
+        if (knockbackDir.LengthSquared() > 0.0001f)
+        {
+            knockbackDir = knockbackDir.Normalized();
+        }
+        else
+        {
+            // 同一位置の場合はランダム方向
+            knockbackDir = Vector2.Right.Rotated(GD.Randf() * Mathf.Tau);
+        }
         _knockbackVelocity = knockbackDir * KnockbackSpeed;
         _hurtTimer?.Start();
 
